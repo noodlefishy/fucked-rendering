@@ -10,28 +10,14 @@ class RenderContext(override val width: Int, override val height: Int) : Bitmap(
             halfWidth = width / 2.toFloat(), halfHeight = height / 2.toFloat()
         )
 
-        var minY: Vertex = v1.transform(screenSpaceTransform).perspectiveDivide()
-        var midY: Vertex = v2.transform(screenSpaceTransform).perspectiveDivide()
-        var maxY: Vertex = v3.transform(screenSpaceTransform).perspectiveDivide()
+        val sortedVertices = listOf(v1, v2, v3)
+            .map { it.transform(screenSpaceTransform).perspectiveDivide() }
+            .sortedBy { it.y }
 
-        //TODO v1 | x = -1.428, y = 1.428, z = 2.800
-        // v1.transform | x = -171.259, y = -128.444, z = 2.800
+        val minY = sortedVertices[0]
+        val midY = sortedVertices[1]
+        val maxY = sortedVertices[2]
 
-        if (maxY.y < midY.y) {
-            val temp: Vertex = maxY
-            maxY = midY
-            midY = temp
-        }
-        if (midY.y < minY.y) {
-            val temp: Vertex = midY
-            midY = minY
-            minY = temp
-        }
-        if (maxY.y < midY.y) {
-            val temp: Vertex = maxY
-            maxY = midY
-            midY = temp
-        }
         scanTriangle(
             minY, midY, maxY,
             whichSide = minY.triangleAreaDouble(maxY, midY) >= 0,
@@ -48,49 +34,36 @@ class RenderContext(override val width: Int, override val height: Int) : Bitmap(
     }
 
     fun scanTriangle(minY: Vertex, midY: Vertex, maxY: Vertex, whichSide: Boolean) {
-        val topToBottom: Edge = Edge(minY, maxY)
-        val topToMiddle: Edge = Edge(minY, midY)
-        val middleToBottom: Edge = Edge(midY, maxY)
+        val topToBottom = Edge(minY, maxY)
+        val topToMiddle = Edge(minY, midY)
+        val middleToBottom = Edge(midY, maxY)
 
-        // These represent "whichside"
-        // scanConvertLine(minY, maxY, 0 + whichSide)
-        // scanConvertLine(minY, midY, 1 - whichSide)
-        // scanConvertLine(midY, maxY, 1 - whichSide)
-        var left = topToBottom // if whichside == 0, goes across whole triangle
-        var right = topToMiddle
-        if (whichSide) {
-            val temp = left
-            left = right
-            right = temp
-        }
-        // Using topToMiddle because it represents all 3 states if doubled
-        var yStart = topToMiddle.yStart.toInt()
-        var yEnd = topToMiddle.yEnd.toInt()
+        // First segment: from minY to midY
+        processScanSegment(topToBottom, topToMiddle, whichSide, topToMiddle.yStart.toInt(), topToMiddle.yEnd.toInt())
 
-        for (i in yStart until yEnd) {
-            drawScanLine(left, right, i)
-            left.step()
-            right.step()
-        }
+        // Second segment: from midY to maxY
+        processScanSegment(topToBottom, middleToBottom, whichSide, middleToBottom.yStart.toInt(), middleToBottom.yEnd.toInt())
+    }
 
-        // This copy is the "doubled" part
-        left = topToBottom
-        right = middleToBottom
+    /**
+     * Processes a segment of the triangle by drawing scan lines between two edges.
+     * The `whichSide` parameter determines which edge is considered 'left' and 'right'
+     */
+    private fun processScanSegment(edgeA: Edge, edgeB: Edge, whichSide: Boolean, yStart: Int, yEnd: Int) {
+        var left = edgeA
+        var right = edgeB
+
         if (whichSide) {
             val temp = left
             left = right
             right = temp
         }
 
-        yStart = middleToBottom.yStart.toInt()
-        yEnd = middleToBottom.yEnd.toInt()
-
         for (i in yStart until yEnd) {
             drawScanLine(left, right, i)
             left.step()
             right.step()
         }
-
     }
 
     private fun drawScanLine(left: Edge, right: Edge, i: Int) {
