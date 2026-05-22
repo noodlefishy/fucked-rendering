@@ -4,7 +4,8 @@ package io.cuttlefish
 // foreshadowing
 class Vertex(
     val pos: Vector4f,
-    val colour: Vector4f
+    val textureCords: Vector4f
+//    val colour: Vector4f
 ) {
 
 //    constructor(x: Float, y: Float, z: Float) : this(Vector4f(x, y, z, 1f))
@@ -19,14 +20,14 @@ class Vertex(
 //    constructor(pos: Vector4f) : this(pos.x, pos.y, pos.z)
 
     fun transform(transformM: Matrix4f): Vertex {
-        return Vertex(transformM.transform(pos),colour)
+        return Vertex(transformM.transform(pos),textureCords)
     }
 
     fun perspectiveDivide(): Vertex {
         // W is like a Z for where each VERTEX is, W is for perspective
         return Vertex(
             pos = Vector4f(x = pos.x / pos.w, y = pos.y / pos.w, z = pos.z / pos.w, w = pos.w)
-            ,colour
+            ,textureCords
         )
     }
 
