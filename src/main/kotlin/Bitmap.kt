@@ -2,7 +2,9 @@ package io.cuttlefish
 
 import java.util.*
 
-open class Bitmap(open val width: Int, open val height: Int, open val components: ByteArray = ByteArray(size = width * height * 4)) {
+open class Bitmap(
+    open val width: Int, open val height: Int, open val components: ByteArray = ByteArray(size = width * height * 4)
+) {
 
     init {
         // Java uses ARGB, 4 values, therefor each pixel is x4
@@ -14,10 +16,19 @@ open class Bitmap(open val width: Int, open val height: Int, open val components
 
     }
 
+    fun copyPixel(destinationX: Int, destinationY: Int, srcX: Int, srcY: Int, src: Bitmap) {
+        val destinationIndex = (destinationX + destinationY * width) * 4
+        val srcIndex = (srcX + srcY * src.width) * 4
+
+        components[destinationIndex + 0] = src.components[srcIndex + 0]
+        components[destinationIndex + 1] = src.components[srcIndex + 1]
+        components[destinationIndex + 2] = src.components[srcIndex + 2]
+        components[destinationIndex + 3] = src.components[srcIndex + 3]
+
+    }
 
     fun drawPixels(x: Int, y: Int, a: Byte, b: Byte, g: Byte, r: Byte) {
-        val yIndexing = y * width
-        val index = (x + yIndexing) * 4
+        val index = (x + y * width) * 4
         components[index + 0] = a
         components[index + 1] = b
         components[index + 2] = g

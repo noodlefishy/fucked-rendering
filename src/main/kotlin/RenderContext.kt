@@ -76,7 +76,11 @@ class RenderContext(override val width: Int, override val height: Int) : Bitmap(
             right = temp
         }
 
-        for (i in yStart until yEnd) {
+        val clampedYStart = yStart.coerceIn(0, height)
+        val clampedYEnd = yEnd.coerceIn(0, height)
+
+
+        for (i in clampedYStart until clampedYEnd) {
             drawScanLine(gradients, left, right, i, texture)
             left.step()
             right.step()
@@ -101,16 +105,20 @@ class RenderContext(override val width: Int, override val height: Int) : Bitmap(
 //        val lerpStep = 1f / (xMax - xMin)
 
         for (j in xMin until xMax) {
-            val r = (colour.x * 255f + 0.5f).toInt().toByte()
-            val g = (colour.y * 255f + 0.5f).toInt().toByte()
-            val b = (colour.z * 255f + 0.5f).toInt().toByte()
+//            val r = (colour.x * 255f + 0.5f).toInt().toByte()
+//            val g = (colour.y * 255f + 0.5f).toInt().toByte()
+//            val b = (colour.z * 255f + 0.5f).toInt().toByte()
+//            drawPixels(j, i, a = 0xFF.toByte(), b = b, g = g, r = r)
 
+            val srcX: Int = (textureCordX * (texture.width - 1) + 0.5f).toInt()
+            val srcY: Int = (textureCordY * (texture.width - 1) + 0.5f).toInt()
 
-            drawPixels(j, i, a = 0xFF.toByte(), b = b, g = g, r = r)
+            copyPixel(i, j, srcX, srcY, texture)
+
             textureCordX += gradients.textureCordXStep.x
             textureCordY += gradients.textureCordXStep.y
 
-            //            lerpAmount += lerpStep
+            //lerpAmount += lerpStep
         }
 
     }
