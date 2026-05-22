@@ -1,6 +1,5 @@
 package io.cuttlefish
 
-import kotlinx.coroutines.runBlocking
 import kotlin.math.ceil
 
 class Edge(
@@ -21,12 +20,12 @@ class Edge(
 
     val xPreStep = x - start.x
 
-    val colour: Vector4f =
+    var colour: Vector4f =
         gradients.colour[minyIndex] + (gradients.colourYStep * yPreStep) + (gradients.colourXStep * xPreStep)
-    val colourStep: Vector4f = (gradients.colourYStep + gradients.colourXStep) * xStep
 
-    fun step() = runBlocking {
+    val colourStep: Vector4f = gradients.colourYStep + (gradients.colourXStep * xStep)
+    fun step() {
         x += xStep
+        colour += colourStep
     }
-
 }
