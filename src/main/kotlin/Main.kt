@@ -5,15 +5,11 @@ import java.lang.Math.toRadians
 
 fun main() {
     val display = Display(800, 600, "fucked rendering")
-
     val target = display.frameBuffer
 
 
 //    val stars = Stars3D(4096, 64f, 20f)
 
-//    val a = Vertex(-1f, -1f, 0f)
-//    val b = Vertex(0f, 1f, 0f)
-//    val c = Vertex(1f, -1f, 0f)
 
     val a = Vertex(
         pos = Vector4f(-1f, -1f, 0f, 1f),
@@ -55,8 +51,6 @@ fun main() {
             v3 = a.transform(transform)
         )
 
-//        target.scanConvertTriangle(minY,midY,maxY,0)
-//        target.fillShape(100, 300)
 
 
         display.swapBuffers()
