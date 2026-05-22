@@ -1,5 +1,7 @@
 package io.cuttlefish
 
+import kotlin.math.ceil
+
 class RenderContext(override val width: Int, override val height: Int) : Bitmap(width, height) {
     val scanBuffer = IntArray(2 * height)
 
@@ -72,20 +74,21 @@ class RenderContext(override val width: Int, override val height: Int) : Bitmap(
     }
 
     private fun scanConvertLine(minY: Vertex, maxY: Vertex, whichSide: Int) {
-        val yStart = minY.y
-        val yEnd = maxY.y
-        val xStart = minY.x
-        val xEnd = maxY.x
+        val yStart = ceil(minY.y).toInt()
+        val yEnd = ceil(maxY.y).toInt()
+//        val xStart = ceil(minY.x).toInt()
+//        val xEnd = ceil(maxY.x).toInt()
 
-        val yDistance = yEnd - yStart
-        val xDistance = xEnd - xStart
+        val yDistance = maxY.y - minY.y
+        val xDistance = maxY.x - minY.x
 
         if (yDistance <= 0) return
 
         val xStep: Float = xDistance / yDistance
-        var xCurrent: Float = xStart
-        for (j in yStart.toInt() until yEnd.toInt()) {
-            scanBuffer[j * 2 + whichSide/* min/max side*/] = xCurrent.toInt()
+        val yPreStep = yStart - minY.y
+        var xCurrent: Float = minY.x + yPreStep * xStep
+        for (j in yStart until yEnd) {
+            scanBuffer[j * 2 + whichSide/* min/max side*/] = ceil(xCurrent).toInt()
             xCurrent += xStep
 
         }
