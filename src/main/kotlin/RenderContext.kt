@@ -34,15 +34,22 @@ class RenderContext(override val width: Int, override val height: Int) : Bitmap(
     }
 
     fun scanTriangle(minY: Vertex, midY: Vertex, maxY: Vertex, whichSide: Boolean) {
-        val topToBottom = Edge(minY, maxY)
-        val topToMiddle = Edge(minY, midY)
-        val middleToBottom = Edge(midY, maxY)
+        val gradients = Gradients(minY, midY, maxY)
+        val topToBottom = Edge(gradients, minY, maxY, 0)
+        val topToMiddle = Edge(gradients, minY, midY, 0)
+        val middleToBottom = Edge(gradients, midY, maxY, 1)
 
         // First segment: from minY to midY
         processScanSegment(topToBottom, topToMiddle, whichSide, topToMiddle.yStart.toInt(), topToMiddle.yEnd.toInt())
 
         // Second segment: from midY to maxY
-        processScanSegment(topToBottom, middleToBottom, whichSide, middleToBottom.yStart.toInt(), middleToBottom.yEnd.toInt())
+        processScanSegment(
+            topToBottom,
+            middleToBottom,
+            whichSide,
+            middleToBottom.yStart.toInt(),
+            middleToBottom.yEnd.toInt()
+        )
     }
 
     /**
