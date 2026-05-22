@@ -3,8 +3,6 @@ package io.cuttlefish
 import java.lang.Math.toRadians
 
 
-
-
 fun main() {
     val display = Display(800, 600, "fucked rendering")
 
@@ -13,9 +11,22 @@ fun main() {
 
 //    val stars = Stars3D(4096, 64f, 20f)
 
-    val a = Vertex(-1f, -1f, 0f)
-    val b = Vertex(0f, 1f, 0f)
-    val c = Vertex(1f, -1f, 0f)
+//    val a = Vertex(-1f, -1f, 0f)
+//    val b = Vertex(0f, 1f, 0f)
+//    val c = Vertex(1f, -1f, 0f)
+
+    val a = Vertex(
+        pos = Vector4f(-1f, -1f, 0f, 1f),
+        colour = Vector4f(1f, 0f, 0f, 0f)
+    )
+    val b = Vertex(
+        pos = Vector4f(0f, 1f, 0f, 1f),
+        colour = Vector4f(0f, 1f, 0f, 0f)
+    )
+    val c = Vertex(
+        pos = Vector4f(1f, -1f, 0f, 1f),
+        colour = Vector4f(0f, 0f, 1f, 0f)
+    )
 
 
     val projection: Matrix4f = Matrix4f().initPerspective(
@@ -32,7 +43,7 @@ fun main() {
         val delta = ((current - previousTime) / 1_000_000_000.0).toFloat()
         previousTime = current
 //        stars.updateAndRender(target, delta)
-        rotCounter += delta *5
+        rotCounter += delta * 5
         val translation = Matrix4f().initTranslation(0f, 0f, 3f) // set 3units away
         val rotation = Matrix4f().initRotation(0f, rotCounter, 0f)
         val transform = projection.Mul(translation.Mul(rotation))

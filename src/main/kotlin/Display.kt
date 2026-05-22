@@ -63,8 +63,8 @@ class Display(width: Int, height: Int, title: String) : Canvas() {
 
     fun swapBuffers() {
         frameBuffer.copyToByteArray(displayComponents)
-        graphic.drawImage(/* img = */ displayImage,/* x = */
-            0,/* y = */
+        graphic.drawImage(/* p0 = */ displayImage,/* x = */
+            0,/* p2 = */
             0,/* width = */
             frameBuffer.width,/* height = */
             frameBuffer.height,/* observer = */
