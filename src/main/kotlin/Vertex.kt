@@ -6,7 +6,7 @@ class Vertex(
     val pos: Vector4f
 ) {
 
-    // Overloaded constructor so you can still do Vertex(x, y, z)
+    // Overloaded constructor so we can still do Vertex(x, y, z)
     constructor(x: Float, y: Float, z: Float) : this(Vector4f(x, y, z, 1f))
 
     // Expose x, y, and z safely

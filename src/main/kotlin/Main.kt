@@ -13,7 +13,7 @@ fun main() {
 
 //    val stars = Stars3D(4096, 64f, 20f)
 
-    val a = Vertex(-1.4f, -1f, 0f)
+    val a = Vertex(-1f, -1f, 0f)
     val b = Vertex(0f, 1f, 0f)
     val c = Vertex(1f, -1f, 0f)
 
@@ -34,7 +34,7 @@ fun main() {
 //        stars.updateAndRender(target, delta)
         rotCounter += delta *5
         val translation = Matrix4f().initTranslation(0f, 0f, 3f) // set 3units away
-        val rotation = Matrix4f().initRotation(rotCounter / 1.5f, rotCounter, 0f)
+        val rotation = Matrix4f().initRotation(0f, rotCounter, 0f)
         val transform = projection.Mul(translation.Mul(rotation))
 
         target.clear(0x00)
