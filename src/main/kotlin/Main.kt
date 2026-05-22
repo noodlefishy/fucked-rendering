@@ -52,7 +52,7 @@ fun main() {
         val delta = ((current - previousTime) / 1_000_000_000.0).toFloat()
         previousTime = current
 //        stars.updateAndRender(target, delta)
-        rotCounter += delta * 5
+        rotCounter += delta * 2
         val translation = Matrix4f().initTranslation(0f, 0f, 3f) // set 3units away
         val rotation = Matrix4f().initRotation(0f, rotCounter, 0f)
         val transform = projection.Mul(translation.Mul(rotation))

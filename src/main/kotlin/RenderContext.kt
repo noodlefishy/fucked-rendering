@@ -91,7 +91,7 @@ class RenderContext(override val width: Int, override val height: Int) : Bitmap(
         val xMin = ceil(left.x).toInt()
         val xMax = ceil(right.x).toInt()
 
-        val xPreStepAbstract = xMax - left.x
+        val xPreStepAbstract = xMin - left.x
 
         var textureCordX = left.textureCord.x + gradients.textureCordXStep.x * xPreStepAbstract
         var textureCordY = left.textureCord.y + gradients.textureCordXStep.y * xPreStepAbstract
@@ -113,7 +113,7 @@ class RenderContext(override val width: Int, override val height: Int) : Bitmap(
             val srcX: Int = (textureCordX * (texture.width - 1) + 0.5f).toInt()
             val srcY: Int = (textureCordY * (texture.width - 1) + 0.5f).toInt()
 
-            copyPixel(i, j, srcX, srcY, texture)
+            copyPixel(j, i, srcX, srcY, texture)
 
             textureCordX += gradients.textureCordXStep.x
             textureCordY += gradients.textureCordXStep.y
