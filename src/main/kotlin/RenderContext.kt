@@ -40,10 +40,11 @@ class RenderContext(override val width: Int, override val height: Int) : Bitmap(
         val middleToBottom = Edge(gradients, midY, maxY, 1)
 
         // First segment: from minY to midY
-        processScanSegment(topToBottom, topToMiddle, whichSide, topToMiddle.yStart.toInt(), topToMiddle.yEnd.toInt())
+        processScanSegment(gradients,topToBottom, topToMiddle, whichSide, topToMiddle.yStart.toInt(), topToMiddle.yEnd.toInt())
 
         // Second segment: from midY to maxY
         processScanSegment(
+            gradients,
             topToBottom,
             middleToBottom,
             whichSide,
@@ -56,7 +57,7 @@ class RenderContext(override val width: Int, override val height: Int) : Bitmap(
      * Processes a segment of the triangle by drawing scan lines between two edges.
      * The `whichSide` parameter determines which edge is considered 'left' and 'right'
      */
-    private fun processScanSegment(edgeA: Edge, edgeB: Edge, whichSide: Boolean, yStart: Int, yEnd: Int) {
+    private fun processScanSegment(gradients: Gradients, edgeA: Edge, edgeB: Edge, whichSide: Boolean, yStart: Int, yEnd: Int) {
         var left = edgeA
         var right = edgeB
 
@@ -67,18 +68,20 @@ class RenderContext(override val width: Int, override val height: Int) : Bitmap(
         }
 
         for (i in yStart until yEnd) {
-            drawScanLine(left, right, i)
+            drawScanLine(gradients, left, right, i)
             left.step()
             right.step()
         }
     }
 
-    private fun drawScanLine(left: Edge, right: Edge, i: Int) {
+    private fun drawScanLine(gradients: Gradients, left: Edge, right: Edge, i: Int) {
         val xMin = ceil(left.x).toInt()
         val xMax = ceil(right.x).toInt()
 
-        val minColour = left.colour
-        val maxColour = right.colour
+        val xPreStep = xMin - left.x
+
+        val minColour = (left.colour.plus(gradients.colourXStep)).times(xPreStep)
+        val maxColour = (right.colour.plus(gradients.colourXStep)).times(xPreStep)
 
         var lerpAmount = 0f
         val lerpStep = 1f / (xMax - xMin)
