@@ -48,11 +48,12 @@ class RenderContext(override val width: Int, override val height: Int) : Bitmap(
 
     }
 
-
+    @Deprecated("")
     fun drawScanBuffer(y: Int, xMin: Int, xMax: Int) {
         scanBuffer[y * 2] = xMin; scanBuffer[y * 2 + 1] = xMax
     }
 
+    @Deprecated("")
     fun fillShape(yMin: Int, yMax: Int) {
         for (i in yMin until yMax) {
             val xMin = scanBuffer[i * 2]
@@ -70,7 +71,7 @@ class RenderContext(override val width: Int, override val height: Int) : Bitmap(
         }
     }
 
-
+    @Deprecated("")
     fun scanConvertTriangle(minY: Vertex, midY: Vertex, maxY: Vertex, whichSide: Int) {
         scanConvertLine(minY, maxY, 0 + whichSide)
         scanConvertLine(minY, midY, 1 - whichSide)
