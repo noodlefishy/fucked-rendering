@@ -1,15 +1,12 @@
 package io.cuttlefish
 
-import kotlin.math.ceil
-
 class RenderContext(override val width: Int, override val height: Int) : Bitmap(width, height) {
     val scanBuffer = IntArray(2 * height)
 
 
     fun fillTriangle(v1: Vertex, v2: Vertex, v3: Vertex) {
         val screenSpaceTransform = Matrix4f().initScreenSpaceTransform(
-            halfWidth = width / 2.toFloat(),
-            halfHeight = height / 2.toFloat()
+            halfWidth = width / 2.toFloat(), halfHeight = height / 2.toFloat()
         )
 
         var minY: Vertex = v1.transform(screenSpaceTransform).perspectiveDivide()
@@ -34,13 +31,18 @@ class RenderContext(override val width: Int, override val height: Int) : Bitmap(
             maxY = midY
             midY = temp
         }
+        scanTriangle(
+            minY, midY, maxY,
+            whichSide = minY.triangleAreaDouble(maxY, midY) >= 0,
+        )
 
-        val area: Float = minY.triangleAreaDouble(maxY, midY)
-        val whichSide = if (area >= 0) 1 else 0
+
+//        val area: Float = minY.triangleAreaDouble(maxY, midY)
+//        val whichSide = if (area >= 0) 1 else 0
 
 
-        scanConvertTriangle(minY, midY, maxY, whichSide)
-        fillShape(minY.y.toInt(), maxY.y.toInt())
+//        scanTriangle(minY, midY, maxY, whichSide)
+//        fillShape(minY.y.toInt(), maxY.y.toInt())
 
     }
 
@@ -72,6 +74,54 @@ class RenderContext(override val width: Int, override val height: Int) : Bitmap(
         scanConvertLine(minY, midY, 1 - whichSide)
         scanConvertLine(midY, maxY, 1 - whichSide)
     }
+
+    fun scanTriangle(minY: Vertex, midY: Vertex, maxY: Vertex, whichSide: Boolean) {
+        val topToBottom: Edge = Edge(minY, maxY)
+        val topToMiddle: Edge = Edge(minY, midY)
+        val middleToBottom: Edge = Edge(midY, maxY)
+
+        // These represent "whichside"
+        // scanConvertLine(minY, maxY, 0 + whichSide)
+        // scanConvertLine(minY, midY, 1 - whichSide)
+        // scanConvertLine(midY, maxY, 1 - whichSide)
+        var left = topToBottom // if whichside == 0, goes across whole triangle
+        var right = topToMiddle
+        if (whichSide) {
+            val temp = left
+            left = right
+            right = temp
+        }
+        // Using topToMiddle because it represents all 3 states if doubled
+        var yStart = topToMiddle.yStart.toInt()
+        var yEnd = topToMiddle.yEnd.toInt()
+
+        for (i in yStart until yEnd) {
+            drawScanLine(left, right, i)
+            left.step()
+            right.step()
+        }
+
+        // This copy is the "doubled" part
+        left = topToBottom
+        right = middleToBottom
+        if (whichSide) {
+            val temp = left
+            left = right
+            right = temp
+        }
+
+        yStart = middleToBottom.yStart.toInt()
+        yEnd = middleToBottom.yEnd.toInt()
+
+        for (i in yStart until yEnd) {
+            drawScanLine(left, right, i)
+            left.step()
+            right.step()
+        }
+
+    }
+
+
 
     private fun scanConvertLine(minY: Vertex, maxY: Vertex, whichSide: Int) {
         val yStart = minY.y
