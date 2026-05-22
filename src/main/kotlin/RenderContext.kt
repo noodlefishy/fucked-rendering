@@ -77,14 +77,28 @@ class RenderContext(override val width: Int, override val height: Int) : Bitmap(
         val xMin = ceil(left.x).toInt()
         val xMax = ceil(right.x).toInt()
 
+        val minColour = left.colour
+        val maxColour = right.colour
+
+        var lerpAmount = 0f
+        val lerpStep = 1f / (xMax - xMin)
+
         for (j in xMin until xMax) {
+            val colour = minColour.lerp(maxColour, lerpAmount)
+            val r = (colour.x * 255f + 0.5f).toInt().toByte()
+            val g = (colour.y * 255f + 0.5f).toInt().toByte()
+            val b = (colour.z * 255f + 0.5f).toInt().toByte()
+
+
+
             drawPixels(
                 j, i,
                 a = 0xFF.toByte(),
-                b = 0xFF.toByte(),
-                g = 0xFF.toByte(),
-                r = 0xFF.toByte(),
+                b = b,
+                g = g,
+                r = r,
             )
+            lerpAmount += lerpStep
         }
 
     }

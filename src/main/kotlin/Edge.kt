@@ -4,8 +4,7 @@ import kotlinx.coroutines.runBlocking
 import kotlin.math.ceil
 
 class Edge(
-    gradients: Gradients,
-    start: Vertex, //minY
+    gradients: Gradients, start: Vertex, //minY
     end: Vertex, // maxY
     minyIndex: Int
 ) {
@@ -22,9 +21,9 @@ class Edge(
 
     val xPreStep = x - start.x
 
-    private val colour: Vector4f =
+    val colour: Vector4f =
         gradients.colour[minyIndex] + (gradients.colourYStep * yPreStep) + (gradients.colourXStep * xPreStep)
-    private val colourStep: Vector4f = (gradients.colourYStep + gradients.colourXStep) * xStep
+    val colourStep: Vector4f = (gradients.colourYStep + gradients.colourXStep) * xStep
 
     fun step() = runBlocking {
         x += xStep
