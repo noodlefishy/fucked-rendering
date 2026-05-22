@@ -13,7 +13,7 @@ class Gradients(miny: Vertex, midy: Vertex, maxy: Vertex) {
     private val dColour =
         ((textureCords[1] - textureCords[2]) * (miny.pos.y - maxy.pos.y)) - ((textureCords[0] - textureCords[2]) * (midy.pos.y - maxy.pos.y))
 
-    val colourXStep =
+    val textureCordXStep =
         (((textureCords[1].minus(textureCords[2])).times(
             r = (miny.y - maxy.y)
         )).minus(
@@ -22,7 +22,7 @@ class Gradients(miny: Vertex, midy: Vertex, maxy: Vertex) {
             ))
         )).times(oneOverDX)
 
-    val colourYStep = (((textureCords[1].minus(textureCords[2])).times(
+    val textureCordYStep = (((textureCords[1].minus(textureCords[2])).times(
         (miny.x - maxy.x)
     )).minus(
         ((textureCords[0].minus(textureCords[2])).times(

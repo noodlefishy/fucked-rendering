@@ -20,12 +20,12 @@ class Edge(
 
     val xPreStep = x - start.x
 
-    var colour: Vector4f =
-        gradients.textureCords[minyIndex] + (gradients.colourYStep * yPreStep) + (gradients.colourXStep * xPreStep)
+    var textureCord: Vector4f =
+        gradients.textureCords[minyIndex] + (gradients.textureCordYStep * yPreStep) + (gradients.textureCordXStep * xPreStep)
 
-    val colourStep: Vector4f = gradients.colourYStep + (gradients.colourXStep * xStep)
+    val colourStep: Vector4f = gradients.textureCordYStep + (gradients.textureCordXStep * xStep)
     fun step() {
         x += xStep
-        colour += colourStep
+        textureCord += colourStep
     }
 }
