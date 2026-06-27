@@ -1,6 +1,6 @@
 package io.cuttlefish
 
-import kotlin.math.ceil
+import kotlin.math.*
 
 class RenderContext(override val width: Int, override val height: Int) : Bitmap(width, height) {
 
@@ -39,24 +39,12 @@ class RenderContext(override val width: Int, override val height: Int) : Bitmap(
 
         // First segment: from minY to midY
         processEdgeScan(
-            gradients,
-            topToBottom,
-            topToMiddle,
-            whichSide,
-            topToMiddle.yStart.toInt(),
-            topToMiddle.yEnd.toInt(),
-            texture
+            topToBottom, topToMiddle, whichSide, topToMiddle.yStart.toInt(), topToMiddle.yEnd.toInt(), texture
         )
 
         // Second segment: from midY to maxY
         processEdgeScan(
-            gradients,
-            topToBottom,
-            middleToBottom,
-            whichSide,
-            middleToBottom.yStart.toInt(),
-            middleToBottom.yEnd.toInt(),
-            texture
+            topToBottom, middleToBottom, whichSide, middleToBottom.yStart.toInt(), middleToBottom.yEnd.toInt(), texture
         )
     }
 
@@ -65,7 +53,7 @@ class RenderContext(override val width: Int, override val height: Int) : Bitmap(
      * The `whichSide` parameter determines which edge is considered 'left' and 'right'
      */
     private fun processEdgeScan(
-        gradients: Gradients, edgeA: Edge, edgeB: Edge, whichSide: Boolean, yStart: Int, yEnd: Int, texture: Bitmap
+        edgeA: Edge, edgeB: Edge, whichSide: Boolean, yStart: Int, yEnd: Int, texture: Bitmap
     ) {
         var left = edgeA
         var right = edgeB
@@ -81,20 +69,26 @@ class RenderContext(override val width: Int, override val height: Int) : Bitmap(
 
 
         for (i in clampedYStart until clampedYEnd) {
-            drawScanLine(gradients, left, right, i, texture)
+            drawScanLine(left, right, i, texture)
             left.step()
             right.step()
         }
     }
 
-    private fun drawScanLine(gradients: Gradients, left: Edge, right: Edge, i: Int, texture: Bitmap) {
+    private fun drawScanLine(left: Edge, right: Edge, i: Int, texture: Bitmap) {
         val xMin = ceil(left.x).toInt()
         val xMax = ceil(right.x).toInt()
 
         val xPreStepAbstract = xMin - left.x
 
-        var textureCordX = left.textureCord.x + gradients.textureCordXStep.x * xPreStepAbstract
-        var textureCordY = left.textureCord.y + gradients.textureCordXStep.y * xPreStepAbstract
+        val xDistance = right.x - left.x
+
+        val texturecordxXstep = (right.textureCord.x - left.textureCord.x) / xDistance
+        val texturecordxYstep = (right.textureCord.y - left.textureCord.y) / xDistance
+
+
+        var textureCordX = left.textureCord.x + texturecordxXstep * xPreStepAbstract
+        var textureCordY = left.textureCord.y + texturecordxYstep * xPreStepAbstract
 
 
         // Color + (Step * Offset)
@@ -111,13 +105,12 @@ class RenderContext(override val width: Int, override val height: Int) : Bitmap(
 //            drawPixels(j, i, a = 0xFF.toByte(), b = b, g = g, r = r)
 
             val srcX: Int = (textureCordX * (texture.width - 1) + 0.5f).toInt()
-            val srcY: Int = (textureCordY * (texture.width - 1) + 0.5f).toInt()
+            val srcY: Int = (textureCordY * (texture.height - 1) + 0.5f).toInt()
 
             copyPixel(j, i, srcX, srcY, texture)
 
-            textureCordX += gradients.textureCordXStep.x
-            textureCordY += gradients.textureCordXStep.y
-
+            textureCordX += texturecordxXstep
+            textureCordY += texturecordxYstep
             //lerpAmount += lerpStep
         }
 
