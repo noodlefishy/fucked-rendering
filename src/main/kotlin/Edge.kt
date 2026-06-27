@@ -1,9 +1,10 @@
 package io.cuttlefish
 
-import kotlin.math.ceil
+import kotlin.math.*
 
 class Edge(
-    gradients: Gradients, start: Vertex, //minY
+    gradients: Gradients,
+    start: Vertex, //minY
     end: Vertex, // maxY
     minyIndex: Int
 ) {
